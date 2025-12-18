@@ -75,4 +75,4 @@ pipeline: my_voice_pipeline  # optional
 ## License
 MIT License — see LICENSE file.
 
-![](infografica-voice-sattellite-card.png)
+![](voice-satellite-card-info.png)

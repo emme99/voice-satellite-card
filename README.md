@@ -5,6 +5,8 @@ voice satellite using **openWakeWord** running locally in the browser
 (via ONNX Runtime Web/WASM). It integrates directly with Home Assistant's  
 Assist Pipeline for local wake word detection and maximum privacy.
 
+![](Screenshot.png)
+
 ## Features
 - **Local Wake Word**: Runs entirely in the browser — no audio sent until  
   wake word is detected.
@@ -17,7 +19,7 @@ Assist Pipeline for local wake word detection and maximum privacy.
 - Built on **openWakeWord** by [dscripka/openWakeWord](https://github.com/dscripka/openWakeWord)  
   (MIT License).
 - Inspired by "Open Wake Word on the Web" from Deep Core Labs  
-  [](https://deepcorelabs.com/open-wake-word-on-the-web/).
+  (https://deepcorelabs.com/open-wake-word-on-the-web/).
 - Uses Microsoft's ONNX Runtime Web.
 
 **AI Assistance Disclaimer**: Parts of this code were generated or assisted  
@@ -72,3 +74,5 @@ pipeline: my_voice_pipeline  # optional
 
 ## License
 MIT License — see LICENSE file.
+
+![](infografica-voice-sattellite-card.png)

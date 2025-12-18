@@ -1,2 +1,74 @@
-# voice-satellite-card
-A Home Assistant custom card that turns your browser into a fully-featured   voice satellite using **openWakeWord** running locally in the browser   (via ONNX Runtime Web/WASM). It integrates directly with Home Assistant's   Assist Pipeline for local wake word detection and maximum privacy.
+# Voice Satellite Custom Card
+
+A Home Assistant custom card that turns your browser into a fully-featured  
+voice satellite using **openWakeWord** running locally in the browser  
+(via ONNX Runtime Web/WASM). It integrates directly with Home Assistant's  
+Assist Pipeline for local wake word detection and maximum privacy.
+
+## Features
+- **Local Wake Word**: Runs entirely in the browser — no audio sent until  
+  wake word is detected.
+- **Native Integration**: Direct audio streaming to Assist Pipeline.
+- **Maximum Privacy**: All wake word processing on-device.
+- **No Extra Server**: No Python/Wyoming needed for detection.
+- **Rich Feedback**: Colored indicators, beeps, icons, debug log.
+
+## Credits & Inspiration
+- Built on **openWakeWord** by [dscripka/openWakeWord](https://github.com/dscripka/openWakeWord)  
+  (MIT License).
+- Inspired by "Open Wake Word on the Web" from Deep Core Labs  
+  [](https://deepcorelabs.com/open-wake-word-on-the-web/).
+- Uses Microsoft's ONNX Runtime Web.
+
+**AI Assistance Disclaimer**: Parts of this code were generated or assisted  
+by AI models (including Grok by xAI). All code has been manually reviewed  
+and tested.
+
+## Installation
+
+### 1. Create Directory
+Create folder: `config/www/voice-satellite-card/`
+
+### 2. Copy Files
+Place in the folder:
+- `voice-satellite-card.js`
+- ONNX Runtime WASM files (e.g., `ort-wasm-simd-threaded.wasm`, `.mjs`)
+- `models/` folder (with all `.onnx` files)
+- `assets/` folder (images and sounds)
+
+**Models download**:  
+https://github.com/dscripka/openWakeWord/tree/main/openwakeword/resources/models
+
+### 3. Add Resource
+Settings → Dashboards → Resources → Add Resource  
+- URL: `/local/voice-satellite-card/voice-satellite-card.js`  
+- Type: `JavaScript Module`
+
+### 4. Add Card to Dashboard
+```yaml
+type: custom:voice-satellite-card
+wake_word: ok_nabu
+pipeline: my_voice_pipeline  # optional
+
+```
+
+### Configuration Options
+
+| Option | Description | Default |
+| :--- | :--- | :--- |
+| `wake_word` | The wake word model to use. Options: `ok_nabu`, `alexa`, `hey_jarvis`, `hey_rhasspy`. | `ok_nabu` |
+| `pipeline` | The ID of the Home Assistant Assist Pipeline to use. If omitted, uses the default pipeline. | Default Pipeline |
+
+## Usage
+1.  Click **Start Listening**.
+2.  Grant microphone permissions.
+3.  Say "Alexa" (or your configured wake word).
+4.  Speak your command to Home Assistant.
+
+## Troubleshooting
+-   **Microphone Error**: Ensure you are accessing Home Assistant via HTTPS or localhost. Browsers block microphone access on insecure HTTP (except localhost).
+-   **Models not loading**: Check the browser console (F12) for 404 errors. Ensure the `models` folder is correctly placed in `www/voice-satellite/`.
+-   **Connection Error**: Ensure your Home Assistant URL is correct. The card uses the authenticated session from the dashboard.
+
+## License
+MIT License — see LICENSE file.

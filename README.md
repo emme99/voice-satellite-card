@@ -30,16 +30,6 @@ and tested.
 
 ## Installation
 
-### Method 1: HACS (Recommended)
-1.  Open HACS in Home Assistant.
-2.  Go to **Frontend** > **Custom Repositories**.
-3.  Add this repository URL.
-4.  Select **Lovelace** as the category.
-5.  Click **Add** and then **Install**.
-6.  Reload your browser.
-
-### Method 2: Manual Installation
-
 #### 1. Create Directory
 Create folder: `config/www/voice-satellite-card/`
 

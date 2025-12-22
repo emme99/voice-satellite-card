@@ -44,7 +44,7 @@ and tested.
 Create folder: `config/www/voice-satellite-card/`
 
 #### 2. Copy Files
-Copy all files from the `dist/` folder of this repository into the created folder.
+Copy all files from this repository into the created folder.
 Structure should look like:
 - `config/www/voice-satellite-card/voice-satellite-card.js`
 - `config/www/voice-satellite-card/assets/...`

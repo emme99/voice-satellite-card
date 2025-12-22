@@ -1,5 +1,11 @@
 {
   "name": "Voice Satellite Card",
+  "content_in_root": true,
   "render_readme": true,
+  "zip_release": false,
+  "domains": ["frontend"],
+  "homeassistant": "2025.12.0",
+  "requirements": [],
+  "url": "https://github.com/emme99/voice-satellite-card",
   "filename": "voice-satellite-card.js"
 }

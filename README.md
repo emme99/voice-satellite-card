@@ -5,7 +5,7 @@ voice satellite using **openWakeWord** running locally in the browser
 (via ONNX Runtime Web/WASM). It integrates directly with Home Assistant's
 Assist Pipeline for local wake word detection and maximum privacy.
 
-![](dist/assets/idle.jpg) 
+![](Screenshot.png) 
 
 ## Features
 - **Local Wake Word**: Runs entirely in the browser — no audio sent until
@@ -14,6 +14,8 @@ Assist Pipeline for local wake word detection and maximum privacy.
 - **Maximum Privacy**: All wake word processing on-device.
 - **No Extra Server**: No Python/Wyoming needed for detection.
 - **Rich Feedback**: Colored indicators, beeps, icons, debug log.
+
+![](voice-satellite-card-info.png) 
 
 ## Credits & Inspiration
 - Built on **openWakeWord** by [dscripka/openWakeWord](https://github.com/dscripka/openWakeWord)

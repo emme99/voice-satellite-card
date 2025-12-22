@@ -5,6 +5,10 @@
  * It performs wake word detection in the browser using ONNX Runtime Web and streams audio
  * to Home Assistant's Assist Pipeline for speech-to-text and intent recognition.
  */
+
+// Determine the base URL relative to this script
+const BASE_URL = new URL('.', import.meta.url).href;
+
 class VoiceSatelliteCard extends HTMLElement {
     constructor() {
         super();
@@ -78,11 +82,11 @@ class VoiceSatelliteCard extends HTMLElement {
             
             // Load ORT if not present
             if (!window.ort) {
-                await this.loadScript('/local/voice-satellite-card/ort.wasm.min.js');
+                await this.loadScript(new URL('ort.wasm.min.js', BASE_URL).href);
             }
             
             // Configure WASM paths for ONNX Runtime
-            ort.env.wasm.wasmPaths = "/local/voice-satellite-card/";
+            ort.env.wasm.wasmPaths = BASE_URL;
 
             // Initialize HA Connection (Dedicated)
             this.initHAConnection();
@@ -136,7 +140,7 @@ class VoiceSatelliteCard extends HTMLElement {
         
         const sessionOptions = { executionProviders: ['wasm'] };
         try {
-            const basePath = '/local/voice-satellite-card/models/';
+            const basePath = new URL('models/', BASE_URL).href;
             
             // Determine model file based on configuration
             let modelFile = 'ok_nabu.onnx';
@@ -237,7 +241,7 @@ class VoiceSatelliteCard extends HTMLElement {
             </style>
             <div class="card">
                 <h2>Voice Satellite</h2>
-                <img id="status-icon" class="status-icon" src="/local/voice-satellite-card/assets/idle.jpg">
+                <img id="status-icon" class="status-icon" src="${new URL('assets/idle.jpg', BASE_URL).href}">
                 <div id="status-text" class="status-text">Ready</div>
                 
                 <button id="start-button">Start Listening</button>
@@ -289,7 +293,7 @@ class VoiceSatelliteCard extends HTMLElement {
         else if (state === 'recording') iconName = 'recording.jpg';
         else if (state === 'error') iconName = 'error.jpg';
         
-        this.shadowRoot.getElementById('status-icon').src = `/local/voice-satellite-card/assets/${iconName}`;
+        this.shadowRoot.getElementById('status-icon').src = new URL(`assets/${iconName}`, BASE_URL).href;
     }
 
     // --- Audio Logic (Copied & Adapted from app.js) ---
@@ -575,7 +579,7 @@ class VoiceSatelliteCard extends HTMLElement {
     }
     
     playBeep(type = 1) {
-        const audio = new Audio(`/local/voice-satellite-card/assets/beep-${type}.wav`);
+        const audio = new Audio(new URL(`assets/beep-${type}.wav`, BASE_URL).href);
         audio.play().catch(e => console.error(e));
     }
 

@@ -12,6 +12,8 @@ The Voice Satellite Card is a **Home Assistant Custom Card** (Web Component) tha
 2.  **AudioWorklet**: A separate thread that processes raw audio from the microphone. It buffers audio into chunks.
 3.  **ONNX Runtime Web (WASM)**: Runs the machine learning models in the browser.
 4.  **Home Assistant Connection**: A WebSocket connection to Home Assistant to stream audio and receive events.
+5.  **Chat UI**: A conditional interface for text-based interactions (`mode: text` or `mode: both`).
+
 
 ## Data Flow
 
@@ -57,6 +59,14 @@ pipeline: <pipeline_id>
 
 -   `wake_word`: Selects the model file to load.
 -   `pipeline`: Passed to `assist_pipeline/run` to select the assistant.
+-   `mode`: Controls the active components (`voice`, `text`, `both`).
+
+## Modes
+
+-   **Voice**: Default. Loads VAD/Wake Word models. Standard satellite behavior.
+-   **Text**: Disables microphone processing and model loading. Only shows Chat UI.
+-   **Both**: Loads all models for voice, but also renders Chat UI for hybrid usage.
+
 
 ```mermaid
 flowchart TD

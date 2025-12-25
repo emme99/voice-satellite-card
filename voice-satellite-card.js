@@ -23,6 +23,9 @@ class VoiceSatelliteCard extends HTMLElement {
         this.models = {}; // Will be populated in loadModels based on config
         this.wakeWord = 'ok_nabu'; // Default
         this.pipelineId = undefined; // Default to HA default
+        this.pipelineId = undefined; // Default to HA default
+        this.mode = 'voice'; // 'voice', 'text', 'both'
+
         
         // Audio Context
         this.audioContext = null;
@@ -57,6 +60,14 @@ class VoiceSatelliteCard extends HTMLElement {
         this._config = config;
         this.wakeWord = config.wake_word || 'ok_nabu';
         this.pipelineId = config.pipeline;
+        this.extendedMode = config.extended_mode === true; // Backward compatibility
+        if (config.mode) {
+             this.mode = config.mode;
+        } else if (this.extendedMode) {
+             this.mode = 'both';
+        } else {
+             this.mode = 'voice';
+        }
     }
 
     /**
@@ -91,8 +102,12 @@ class VoiceSatelliteCard extends HTMLElement {
             // Initialize HA Connection (Dedicated)
             this.initHAConnection();
 
-            // Load Models
-            this.loadModels();
+            // Load Models if voice is enabled
+            if (this.mode !== 'text') {
+                this.loadModels();
+            } else {
+                this.shadowRoot.getElementById('start-button').style.display = 'none';
+            }
         } catch (e) {
             this.log(`Initialization failed: ${e.message}`, 'error');
             console.error("Initialization failed:", e);
@@ -238,14 +253,68 @@ class VoiceSatelliteCard extends HTMLElement {
                 .log-entry.user { color: var(--primary-color); font-weight: bold; }
                 .log-entry.assistant { color: var(--primary-text-color); }
                 .log-entry.error { color: var(--error-color); }
+                
+                /* Chat UI */
+                .chat-container {
+                    display: flex;
+                    flex-direction: column;
+                    height: 300px;
+                    overflow-y: auto;
+                    border: 1px solid var(--divider-color);
+                    border-radius: 4px;
+                    padding: 8px;
+                    margin-top: 16px;
+                    background: var(--secondary-background-color);
+                }
+                .chat-bubble {
+                    padding: 8px 12px;
+                    border-radius: 12px;
+                    margin-bottom: 8px;
+                    max-width: 80%;
+                    word-wrap: break-word;
+                }
+                .chat-bubble.user {
+                    align-self: flex-end;
+                    background-color: var(--primary-color);
+                    color: var(--text-primary-color);
+                    border-bottom-right-radius: 2px;
+                }
+                .chat-bubble.assistant {
+                    align-self: flex-start;
+                    background-color: var(--card-background-color);
+                    color: var(--primary-text-color);
+                    border: 1px solid var(--divider-color);
+                    border-bottom-left-radius: 2px;
+                }
+                .input-area {
+                    display: flex;
+                    margin-top: 8px;
+                    gap: 8px;
+                }
+                .input-area input {
+                    flex-grow: 1;
+                    padding: 8px;
+                    border: 1px solid var(--divider-color);
+                    border-radius: 4px;
+                }
             </style>
             <div class="card">
                 <h2>Voice Satellite</h2>
+                ${this.mode !== 'text' ? `
                 <img id="status-icon" class="status-icon" src="${new URL('assets/idle.jpg', BASE_URL).href}">
                 <div id="status-text" class="status-text">Ready</div>
                 
                 <button id="start-button">Start Listening</button>
                 <button id="stop-button" style="display:none">Stop</button>
+                ` : ''}
+                
+                ${this.mode === 'text' || this.mode === 'both' ? `
+                <div id="chat-container" class="chat-container"></div>
+                <div class="input-area">
+                    <input type="text" id="chat-input" placeholder="Type a message...">
+                    <button id="send-button" style="width: auto; margin-top: 0;">Send</button>
+                </div>
+                ` : ''}
                 
                 <div style="margin-top: 10px;">
                     <label>
@@ -257,8 +326,10 @@ class VoiceSatelliteCard extends HTMLElement {
             </div>
         `;
         
-        this.shadowRoot.getElementById('start-button').addEventListener('click', () => this.startListening());
-        this.shadowRoot.getElementById('stop-button').addEventListener('click', () => this.stopListening());
+        if (this.mode !== 'text') {
+            this.shadowRoot.getElementById('start-button').addEventListener('click', () => this.startListening());
+            this.shadowRoot.getElementById('stop-button').addEventListener('click', () => this.stopListening());
+        }
         
         const debugToggle = this.shadowRoot.getElementById('debug-toggle');
         const debugLog = this.shadowRoot.getElementById('debug-log');
@@ -266,6 +337,18 @@ class VoiceSatelliteCard extends HTMLElement {
             debugLog.style.display = e.target.checked ? 'block' : 'none';
             if (!e.target.checked) debugLog.innerHTML = '';
         });
+
+
+
+        if (this.mode === 'text' || this.mode === 'both') {
+            const chatInput = this.shadowRoot.getElementById('chat-input');
+            const sendButton = this.shadowRoot.getElementById('send-button');
+            
+            sendButton.addEventListener('click', () => this.sendText());
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.sendText();
+            });
+        }
     }
     
     loadStyles() {
@@ -285,8 +368,14 @@ class VoiceSatelliteCard extends HTMLElement {
     }
 
     setStatus(status, state) {
-        this.shadowRoot.getElementById('status-text').textContent = status;
+        // In text-only mode, we might not have these elements or want to update them
+        if (this.mode === 'text') return;
+
+        const statusText = this.shadowRoot.getElementById('status-text');
+        if (statusText) statusText.textContent = status;
+        
         let iconName = 'idle.jpg';
+
         if (state === 'listening') iconName = 'listening.jpg';
         else if (state === 'speaking') iconName = 'speaking.jpg';
         else if (state === 'processing') iconName = 'processing.jpg';
@@ -531,11 +620,15 @@ class VoiceSatelliteCard extends HTMLElement {
             case 'stt-end':
                 const text = event.data?.stt_output?.text || "(silence)";
                 this.log(text, 'user');
+                if (this.mode === 'text' || this.mode === 'both') this.appendChatMessage(text, 'user');
                 this.setStatus('Processing...', 'processing');
                 break;
             case 'tts-start':
-                const ttsText = event.data?.tts_output?.text || "";
-                if (ttsText) this.log(ttsText, 'assistant');
+                const ttsText = event.data?.tts_input || event.data?.tts_output?.text || "";
+                if (ttsText) {
+                    this.log(ttsText, 'assistant');
+                    if (this.mode === 'text' || this.mode === 'both') this.appendChatMessage(ttsText, 'assistant');
+                }
                 this.setStatus('Speaking...', 'speaking');
                 break;
             case 'tts-end':
@@ -621,6 +714,44 @@ class VoiceSatelliteCard extends HTMLElement {
             output[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
         }
         return output;
+    }
+
+    async sendText() {
+        const input = this.shadowRoot.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+        
+        input.value = '';
+        this.appendChatMessage(text, 'user');
+        
+        // Use HA Pipeline with text input
+        const options = { 
+            text: text 
+        };
+        if (this.pipelineId) {
+            options.pipeline_id = this.pipelineId;
+        }
+        
+        // Start intent stage directly for text
+        try {
+            const { handlerId, requestId } = await this.haConnection.runAssistPipeline('intent', 'tts', options);
+            this.haConnection.eventListeners.set(requestId, (event) => this.handlePipelineEvent(event));
+        } catch (e) {
+            this.log(`Error sending text: ${e.message}`, 'error');
+            this.appendChatMessage(`Error: ${e.message}`, 'assistant'); // Show error in chat
+        }
+    }
+
+    appendChatMessage(text, sender) {
+        const container = this.shadowRoot.getElementById('chat-container');
+        if (!container) return;
+        
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${sender}`;
+        bubble.textContent = text;
+        
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
     }
 }
 

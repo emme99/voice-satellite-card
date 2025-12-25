@@ -14,6 +14,8 @@ Assist Pipeline for local wake word detection and maximum privacy.
 - **Maximum Privacy**: All wake word processing on-device.
 - **No Extra Server**: No Python/Wyoming needed for detection.
 - **Rich Feedback**: Colored indicators, beeps, icons, debug log.
+- **Chat Interface**: Optional text-based interaction mode.
+
 
 ![](voice-satellite-card-info.png) 
 
@@ -51,6 +53,8 @@ Settings → Dashboards → Resources → Add Resource
 type: custom:voice-satellite-card
 wake_word: ok_nabu
 pipeline: my_voice_pipeline  # optional
+mode: both # 'voice' (default), 'text', or 'both'
+
 ```
 
 ### Configuration Options
@@ -59,6 +63,8 @@ pipeline: my_voice_pipeline  # optional
 | :--- | :--- | :--- |
 | `wake_word` | The wake word model to use. Options: `ok_nabu`, `alexa`, `hey_jarvis`, `hey_rhasspy`. | `ok_nabu` |
 | `pipeline` | The ID of the Home Assistant Assist Pipeline to use. If omitted, uses the default pipeline. | Default Pipeline |
+| `mode` | Operation mode: `voice` (classic), `text` (chat only), `both` (hybrid). | `voice` |
+
 
 ## Usage
 1.  Click **Start Listening**.

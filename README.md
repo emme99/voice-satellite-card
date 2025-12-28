@@ -15,6 +15,8 @@ Assist Pipeline for local wake word detection and maximum privacy.
 - **No Extra Server**: No Python/Wyoming needed for detection.
 - **Rich Feedback**: Colored indicators, beeps, icons, debug log.
 - **Chat Interface**: Optional text-based interaction mode.
+- **Minimal Layouts**: Support for Floating Action Button (FAB) mode.
+
 
 
 ![](voice-satellite-card-info.png) 
@@ -54,6 +56,8 @@ type: custom:voice-satellite-card
 wake_word: ok_nabu
 pipeline: my_voice_pipeline  # optional
 mode: both # 'voice' (default), 'text', or 'both'
+style: fab # 'card' (default) or 'fab'
+
 
 ```
 
@@ -64,6 +68,8 @@ mode: both # 'voice' (default), 'text', or 'both'
 | `wake_word` | The wake word model to use. Options: `ok_nabu`, `alexa`, `hey_jarvis`, `hey_rhasspy`. | `ok_nabu` |
 | `pipeline` | The ID of the Home Assistant Assist Pipeline to use. If omitted, uses the default pipeline. | Default Pipeline |
 | `mode` | Operation mode: `voice` (classic), `text` (chat only), `both` (hybrid). | `voice` |
+| `style` | Layout style: `card` (full card) or `fab` (floating button). | `card` |
+
 
 
 ## Usage

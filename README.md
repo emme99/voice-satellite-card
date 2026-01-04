@@ -79,7 +79,7 @@ style: fab # 'card' (default) or 'fab'
 4.  Speak your command to Home Assistant.
 
 ## Troubleshooting
--   **Microphone Error**: Ensure you are accessing Home Assistant via HTTPS or localhost. Browsers block microphone access on insecure HTTP (except localhost).
+-   **Microphone Error**: Ensure you are accessing Home Assistant via HTTPS or localhost. Browsers block microphone access on insecure HTTP (except localhost). Or test on HTTP without SSL go to chrome://flags/#unsafely-treat-insecure-origin-as-secure, enable it, and add your server’s URL (e.g., http://192.168.1.100:8123) 
 -   **Models not loading**: Check the browser console (F12) for 404 errors. Ensure the `models` folder is correctly placed in `www/voice-satellite-card/`.
 -   **Connection Error**: Ensure your Home Assistant URL is correct. The card uses the authenticated session from the dashboard.
 
